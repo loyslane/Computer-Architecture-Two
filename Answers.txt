@@ -1,0 +1,93 @@
+1. The minimum seek time for an HDD is 9msec, and the maximum seek time is 90msec. The block size of this HDD is 4KB. How long on average does it take to read 100MB of data?
+
+  I'm not sure how to to do this but I assume it takes the seek time to read the block size.
+
+  The minimum seek time is 9msec.  The block size is 4KB.
+  100MB of data would be 25,000 blocks of 4KB.
+  25,000 * 9 = 225,000msec.
+  225,000msec === 225 sec.
+  225 sec === 3.75 minutes.
+
+  The maximum seek time is 90msec.
+  25,000 * 90 = 2,250,000msec.
+  2,250,000msec === 2,250 sec.
+  2,250 sec === 37.5 minutes.
+
+  Assuming the average would be half of that time,
+  (3.75 + 37.5) / 2 = 20.625 minutes.
+
+2. Describe a TCP/IP packet in detail. Describe the header, how many bytes it is, and which components it contains. What data can come after the header?
+
+  TCP header includes (8 bits in a byte)
+    Source port (2 bytes):
+      identifies the sending port.
+    Destination port (2 bytes):
+      identifies the receiving port.
+    Sequence number (4 bytes):
+      if the SYN flag is set (1), this is the initial sequence number.  The sequence number of the actual first data byte and the acknowledged numnber in the corresponding ACK are then this sequence number plus 1.
+      if the SYN flag is clear (0), then this is the accumulated sequence number of the first data byte of this segment for the current session.
+    Acknowledgement number (4 bytes):
+      if the ACK flag is set, then the value of this field is the next sequence number that the sending is expecting.  This acknowledges receipt of all prior bytes (if any).  The first ACK sent by each end acknowledges the other end's inital sequence number itself, but no data.
+    Data offset (4 bits):
+      specifies the size of the TCP header in 320bit words.  The minimum size heaer is 5 words and the maximum is 15 words, thus giving the minimum size of 20 byetes and the maximum of 60 bytes, allowing for up to 40 bytes of options in the header.  This field gets its name fromt he fact that it is also the offset from the start of the TCP segment to the actual data.
+    Reserved (3 bits):
+      for future use and should be set to zero.
+    Flags a.k.a. Control bits (9 bits):
+      contains 9 1-bit flags
+        NS:
+          ECN-nonce-concealment protection.
+        CWR:
+          Congestion Window Reduced - set by the sending host to indicate that it received a TCP segment with the ECE flag set and had responded in congestion control mechanism.
+        ECE (ECN-Echo):
+          if the SYN flag is set (1), ECE indicates that the TCP peer is ECN capable.
+          if the SYN flag is clear (0), ECE indicates that a packet with Congestion Experience flag set in IP header was received during normal transmission.  This serves as an indication of network congestion or impending congestion to the TCP sender.
+        URG:
+          indicates that the Urgent pointer field is significant.
+        ACK:
+          indicates that the Acknowledgement field is significant.  All packets after the initial SYN packet sent by the client should have this flag set.
+        PSH (Push function):
+          asks to push the buffered data to the receiving application.
+        RST:
+          Reset the connection.
+        SYN (Synchronize sequence numbers):
+          only the first packet sent from each end should have this flag set.  Some other flags and fields change meaning based on this flag, and some are only valid for when it is set, and others when it is clear.
+        FIN:
+          last packet from sender.
+    Window size (2 bytes):
+      the size of the receive winder, which specifies the number of window size units that the sender of this segment is currently willing to receive.
+    Checksum (2 bytes):
+      used for error-checking of the header, the Payload, and a Pseudo-Header, which consists of the Source IP Addres, the Destination IP address, the protocol number for the TCP -Protocol and the length of the TCP-Heders including Payload.
+    Urgent pointer (2 bytes):
+      if the URG flag is set, then this is an offset from the sequence number indicating the last urgent data byte.
+    Options (optional) (0-320 bits):
+      length is determined by the data offset field, and can have up to three fields.
+        Option-Kind (required) (1 byte):
+          indicates the type of option.
+        Option-Length (optional) (1 byte):
+          indicates the total length of the option.
+        Option-Data (optional) (variable bytes):
+          contains the value of the option.
+    Padding:
+      is used to ensure that the TCP header ends and data begins on a 32-bit boundary.  The padding is composed of zeros.
+
+3. How does the network protocol guarantee that a TCP/IP packet is complete after transmission?
+
+  TCP detects problems of the internet (e.g. IP packets being lost, duplicated or delivered out-of-order).
+  TCP is a reliable stream delivery service which guarantees that all bytes received will be identical with bytes sent and in the correct order.  It guarantees reliability by using a 'positive acknowledgement with retransmission'.
+
+4. What is the difference between TCP and IP?
+
+  TCP (Transmission Control Protocol)/ IP (Internet Protocol).
+  TCP is one of the main protocols of the Internet Protocol suite.  It provides communication during an app and the IP.  
+    
+  IP handles actual delivery of the data.
+
+5. Why is 3d performance so much higher with a graphics card than without? Modern CPUs are extremely fast, what is limiting their performance?
+
+  a CPU consists of a few cores optimized for sequential serial processing while a CPU has a massively parallel architecture consisting of thousands of smaller, more effient cores designed for handling multiple tasks simultaneously.
+
+  limits of CPU speed
+    Transmission delays:
+      to switch a transistor on to off or off to on, it has to either charge up or drain the wire, which takes time (the longer the wire, the longer the delay).  There is also a minimum amount of time that a transistor takes to flip states, which add up when transistors are chained together.
+    Heat build-up:
+      as the transistors change state, they leak a little electricity, which creates heat, which limits the speed.
